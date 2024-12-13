@@ -3,7 +3,78 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script
+      defer
+      src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"
+    ></script>
+    <script src="https://cdn.tailwindcss.com"></script>
     <title>Todo App</title>
   </head>
-  <body></body>
+  <body>
+    <h1 class="text-center font-bold text-2xl p-4">Todo App</h1>
+    <div x-data="{userInput:''}">
+      <form
+        x-on:submit.prevent="$store.todoStore.addTodo({title:userInput,isCompleted:true}) ; userInput=''"
+        class="flex flex-row items-center justify-center gap-4 mb-8"
+      >
+        <input
+          type="text"
+          x-model="userInput"
+          class="border px-2 py-1"
+          placeholder="Enter todo here..."
+        />
+        <button class="rounded-md bg-blue-500 text-white px-2 py-1">
+          Add Todo
+        </button>
+      </form>
+      <div>
+        <template x-for="todo in $store.todoStore.todos">
+          <div
+            class="flex justify-between items-center gap-2 p-2 border border-gray-300 border-dashed m-auto w-[20%]"
+          >
+            <div class="gap-2 flex">
+              <input type="checkbox" x-model="todo.isCompleted" />
+              <span x-text="todo.title" class="text-lg"></span>
+            </div>
+            <button
+              @click="$store.todoStore.todos.deleteTodo(todo)"
+              class="bg-red-500 px-2 py-1 text-white"
+            >
+              Delete
+            </button>
+          </div>
+        </template>
+      </div>
+    </div>
+
+    <script>
+      document.addEventListener("alpine:init", async () => {
+        Alpine.store("todoStore", {
+          todos: [
+            { title: "groceries", isCompleted: true },
+            { title: "shopping", isCompleted: true },
+          ],
+
+          addTodo(todo) {
+            this.todos.push(todo);
+          },
+
+          deleteTodo(todo) {
+            this.todos.filter((item) => {
+              return item !== todo;
+            });
+          },
+
+          updateTodo(todo) {
+            this.todos.map((item) => {
+              if (item.id === todo.id) {
+                return todo;
+              }
+              return item;
+            });
+          },
+        });
+      });
+    </script>
+  </body>
 </html>
